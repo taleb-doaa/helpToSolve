@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCP HELPDESK - Support Technique</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --ocp-blue: #0056b3;
+            --ocp-dark-blue: #003366;
+            --ocp-gray: #4a5568;
+            --ocp-light-gray: #e2e8f0;
+            --ocp-metal: #718096;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7fafc;
+        }
+        
+        .sidebar {
+            transition: all 0.3s ease;
+        }
+        
+        .ticket-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .kanban-column {
+            min-height: 500px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                position: fixed;
+                z-index: 50;
+                height: 100vh;
+            }
+            .sidebar-open {
+                transform: translateX(0);
+            }
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Menu Button -->
+    <div class="md:hidden fixed top-4 left-4 z-50">
+        <button id="menuBtn" class="p-2 rounded-md bg-blue-600 text-white">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar bg-white w-64 fixed h-full shadow-lg border-r border-gray-200">
+        <!-- OCP Logo -->
+        <div class="p-4 border-b border-gray-200 flex items-center justify-center bg-white">
+            <div class="flex items-center">
+                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white font-bold">OCP</div>
+                <div class="ml-3">
+                    <h1 class="text-lg font-bold text-gray-800">OCP HELPDESK</h1>
+                    <p class="text-xs text-gray-500">Support Technique Intelligent</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User Profile -->
+        <div class="p-4 border-b border-gray-200 flex items-center">
+            <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                <i class="fas fa-user"></i>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm font-medium text-gray-700">Agent OCP</p>
+                <p class="text-xs text-gray-500">admin@ocp.ma</p>
+            </div>
+        </div>
+        
+        <!-- Navigation -->
+        <nav class="p-2">
+            <ul>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg text-blue-600 bg-blue-50">
+                        <i class="fas fa-tachometer-alt mr-3"></i>
+                        <span>Tableau de Bord</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-ticket-alt mr-3"></i>
+                        <span>Tickets</span>
+                        <span class="ml-auto bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">15</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-database mr-3"></i>
+                        <span>Base de Connaissances</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-chart-bar mr-3"></i>
+                        <span>Analytique</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-users mr-3"></i>
+                        <span>Clients</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" class="flex items-center p-3 rounded-lg text-gray-600 hover:bg-blue-50 hover:text-blue-600">
+                        <i class="fas fa-cog mr-3"></i>
+                        <span>Paramètres</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        
+        <!-- AI Assistant -->
+        <div class="p-4 border-t border-gray-200 mt-auto">
+            <div class="bg-blue-50 p-3 rounded-lg">
+                <div class="flex items-center mb-2">
+                    <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <span class="ml-2 text-sm font-medium">Assistant IA</span>
+                </div>
+                <p class="text-xs text-gray-600 mb-2">Besoin d'aide pour résoudre un ticket?</p>
+                <button class="w-full bg-blue-600 text-white text-xs py-1 px-3 rounded hover:bg-blue-700">
+                    <i class="fas fa-comment-alt mr-1"></i> Activer l'assistant
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div id="mainContent" class="main-content md:ml-64 min-h-screen">
+        <!-- Top Navigation -->
+        <header class="bg-white shadow-sm">
+            <div class="flex justify-between items-center p-4">
+                <div class="flex items-center">
+                    <h1 class="text-xl font-bold text-gray-800">Tableau de Bord</h1>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-bell text-gray-500"></i>
+                            <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                    </div>
+                    <div class="relative">
+                        <button class="p-2 rounded-full hover:bg-gray-100">
+                            <i class="fas fa-envelope text-gray-500"></i>
+                            <span class="absolute top-0 right-0 h-2 w-2 rounded-full bg-red-500"></span>
+                        </button>
+                    </div>
+                    <div class="border-l border-gray-200 h-8"></div>
+                    <div class="flex items-center">
+                        <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <span class="ml-2 text-sm font-medium hidden md:inline">Agent OCP</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Dashboard Content -->
+        <main class="p-4 md:p-6">
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-blue-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Tickets ouverts</p>
+                            <h3 class="text-2xl font-bold text-gray-800">24</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                            <i class="fas fa-ticket-alt"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2"><span class="text-green-500">+2.5%</span> vs semaine dernière</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-green-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Résolus cette semaine</p>
+                            <h3 class="text-2xl font-bold text-gray-800">42</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2"><span class="text-green-500">+8.3%</span> vs semaine dernière</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-yellow-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Temps moyen de résolution</p>
+                            <h3 class="text-2xl font-bold text-gray-800">4h 22m</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2"><span class="text-red-500">-12%</span> vs semaine dernière</p>
+                </div>
+                
+                <div class="bg-white p-4 rounded-lg shadow border-l-4 border-purple-500">
+                    <div class="flex justify-between">
+                        <div>
+                            <p class="text-sm text-gray-500">Satisfaction clients</p>
+                            <h3 class="text-2xl font-bold text-gray-800">92%</h3>
+                        </div>
+                        <div class="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center text-purple-600">
+                            <i class="fas fa-smile"></i>
+                        </div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2"><span class="text-green-500">+3%</span> vs semaine dernière</p>
+                </div>
+            </div>
+            
+            <!-- Main Content Area -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Tickets Kanban -->
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                            <h2 class="text-lg font-semibold text-gray-800">Suivi des Tickets</h2>
+                            <button class="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 flex items-center">
+                                <i class="fas fa-plus mr-1"></i> Nouveau Ticket
+                            </button>
+                        </div>
+                        
+                        <!-- Kanban Board -->
+                        <div class="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <!-- Nouveau Column -->
+                            <div class="kanban-column">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="font-medium text-gray-700">Nouveau</h3>
+                                    <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2 py-0.5 rounded-full">8</span>
+                                </div>
+                                
+                                <!-- Ticket Cards -->
+                                <div class="space-y-3">
+                                    <div class="ticket-card bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full">Urgent</span>
+                                                <h4 class="font-medium text-gray-800 mt-1">Problème serveur ERP</h4>
+                                            </div>
+                                            <span class="text-xs text-gray-500">#OCP-2456</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-2">Le serveur ERP ne répond pas depuis 30 minutes...</p>
+                                        <div class="flex items-center justify-between mt-3">
+                                            <div class="flex items-center">
+                                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 text-xs">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <span class="ml-1 text-xs text-gray-600">IT Dept</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">15 min ago</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="ticket-card bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">Moyen</span>
+                                                <h4 class="font-medium text-gray-800 mt-1">Imprimante bloquée</h4>
+                                            </div>
+                                            <span class="text-xs text-gray-500">#OCP-2457</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-2">L'imprimante du bureau 204B affiche une erreur de papier coincé...</p>
+                                        <div class="flex items-center justify-between mt-3">
+                                            <div class="flex items-center">
+                                                <div class="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center text-green-600 text-xs">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <span class="ml-1 text-xs text-gray-600">Compta</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">1h ago</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- En Cours Column -->
+                            <div class="kanban-column">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="font-medium text-gray-700">En Cours</h3>
+                                    <span class="bg-yellow-100 text-yellow-800 text-xs font-medium px-2 py-0.5 rounded-full">12</span>
+                                </div>
+                                
+                                <!-- Ticket Cards -->
+                                <div class="space-y-3">
+                                    <div class="ticket-card bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-xs bg-blue-100 text-blue-800 px-2 py-0.5 rounded-full">Faible</span>
+                                                <h4 class="font-medium text-gray-800 mt-1">Mise à jour logiciel</h4>
+                                            </div>
+                                            <span class="text-xs text-gray-500">#OCP-2453</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-2">Besoin d'aide pour installer la nouvelle version de SAP...</p>
+                                        <div class="flex items-center justify-between mt-3">
+                                            <div class="flex items-center">
+                                                <div class="w-6 h-6 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 text-xs">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <span class="ml-1 text-xs text-gray-600">Logistique</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">2h ago</span>
+                                        </div>
+                                        <div class="mt-2 flex items-center">
+                                            <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs">
+                                                <i class="fas fa-user-tie"></i>
+                                            </div>
+                                            <span class="ml-2 text-xs text-gray-600">Assigné à: Youssef A.</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Résolu Column -->
+                            <div class="kanban-column">
+                                <div class="flex items-center justify-between mb-3">
+                                    <h3 class="font-medium text-gray-700">Résolu</h3>
+                                    <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">4</span>
+                                </div>
+                                
+                                <!-- Ticket Cards -->
+                                <div class="space-y-3">
+                                    <div class="ticket-card bg-white border border-gray-200 rounded-lg p-3 shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                                        <div class="flex justify-between items-start">
+                                            <div>
+                                                <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded-full">Résolu</span>
+                                                <h4 class="font-medium text-gray-800 mt-1">Problème de connexion VPN</h4>
+                                            </div>
+                                            <span class="text-xs text-gray-500">#OCP-2450</span>
+                                        </div>
+                                        <p class="text-sm text-gray-600 mt-2">Impossible de se connecter au VPN depuis le domicile...</p>
+                                        <div class="flex items-center justify-between mt-3">
+                                            <div class="flex items-center">
+                                                <div class="w-6 h-6 rounded-full bg-red-100 flex items-center justify-center text-red-600 text-xs">
+                                                    <i class="fas fa-user"></i>
+                                                </div>
+                                                <span class="ml-1 text-xs text-gray-600">RH</span>
+                                            </div>
+                                            <span class="text-xs text-gray-500">Hier</span>
+                                        </div>
+                                        <div class="mt-2 flex items-center justify-between">
+                                            <div class="flex items-center">
+                                                <div class="w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center text-white text-xs">
+                                                    <i class="fas fa-user-tie"></i>
+                                                </div>
+                                                <span class="ml-2 text-xs text-gray-600">Par: Karim B.</span>
+                                            </div>
+                                            <div class="flex">
+                                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                <i class="fas fa-star text-yellow-400 text-xs"></i>
+                                                <i class="fas fa-star text-gray-300 text-xs"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Predictive Alert -->
+                    <div class="mt-6 bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-yellow-50">
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600 mr-3">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <h2 class="text-lg font-semibold text-gray-800">Alerte Prédictive IA</h2>
+                            </div>
+                            <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-0.5 rounded-full">Nouveau</span>
+                        </div>
+                        <div class="p-4">
+                            <p class="text-sm text-gray-700">Notre IA a détecté un schéma similaire à un pic d'incidents précédent. Nous prévoyons une augmentation des tickets liés aux problèmes réseau dans les 48 prochaines heures.</p>
+                            <div class="mt-3 flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <i class="fas fa-lightbulb text-yellow-400 mr-2"></i>
+                                    <span class="text-xs text-gray-600">Recommandation: Vérifier les serveurs principaux</span>
+                                </div>
+                                <button class="text-xs text-blue-600 hover:text-blue-800">Voir les détails →</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Right Sidebar -->
+                <div class="space-y-6">
+                    <!-- Quick Actions -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-3">Actions Rapides</h2>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button class="flex flex-col items-center justify-center p-3 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100">
+                                <i class="fas fa-search mb-1"></i>
+                                <span class="text-xs">Recherche IA</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-3 rounded-lg bg-green-50 text-green-600 hover:bg-green-100">
+                                <i class="fas fa-file-export mb-1"></i>
+                                <span class="text-xs">Exporter PDF</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-3 rounded-lg bg-purple-50 text-purple-600 hover:bg-purple-100">
+                                <i class="fas fa-chart-pie mb-1"></i>
+                                <span class="text-xs">Rapports</span>
+                            </button>
+                            <button class="flex flex-col items-center justify-center p-3 rounded-lg bg-yellow-50 text-yellow-600 hover:bg-yellow-100">
+                                <i class="fas fa-cog mb-1"></i>
+                                <span class="text-xs">Paramètres</span>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Chatbot -->
+                    <div class="bg-white rounded-lg shadow overflow-hidden">
+                        <div class="p-4 border-b border-gray-200 bg-blue-600 text-white">
+                            <h2 class="text-lg font-semibold flex items-center">
+                                <i class="fas fa-robot mr-2"></i> Assistant Virtuel
+                            </h2>
+                        </div>
+                        <div class="p-4 h-64 overflow-y-auto">
+                            <!-- Chat Messages -->
+                            <div class="flex mb-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-3 max-w-xs">
+                                    <p class="text-sm text-gray-800">Bonjour! Je suis l'assistant IA d'OCP. Comment puis-je vous aider aujourd'hui?</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex mb-3 justify-end">
+                                <div class="bg-blue-100 rounded-lg p-3 max-w-xs">
+                                    <p class="text-sm text-gray-800">Problème avec l'imprimante</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex mb-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2">
+                                    <i class="fas fa-robot"></i>
+                                </div>
+                                <div class="bg-blue-50 rounded-lg p-3 max-w-xs">
+                                    <p class="text-sm text-gray-800">J'ai trouvé 3 solutions dans notre base de connaissances pour les problèmes d'imprimante. Voulez-vous que je vous les montre?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 border-t border-gray-200">
+                            <div class="relative">
+                                <input type="text" placeholder="Tapez votre message..." class="w-full p-2 pl-3 pr-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <button class="absolute right-3 top-2 text-blue-600">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Activity -->
+                    <div class="bg-white rounded-lg shadow p-4">
+                        <h2 class="text-lg font-semibold text-gray-800 mb-3">Activité Récente</h2>
+                        <div class="space-y-3">
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 mr-2 mt-1">
+                                    <i class="fas fa-check"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-800">Ticket #OCP-2449 résolu par Ahmed K.</p>
+                                    <p class="text-xs text-gray-500">Il y a 30 minutes</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 mr-2 mt-1">
+                                    <i class="fas fa-ticket-alt"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-800">Nouveau ticket créé par le Département Financier</p>
+                                    <p class="text-xs text-gray-500">Il y a 1 heure</p>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 mr-2 mt-1">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div>
+                                    <p class="text-sm text-gray-800">Ticket #OCP-2445 a reçu 5 étoiles</p>
+                                    <p class="text-xs text-gray-500">Il y a 2 heures</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- New Ticket Modal (Hidden by default) -->
+    <div id="ticketModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl">
+            <div class="p-4 border-b border-gray-200 flex justify-between items-center bg-blue-600 text-white">
+                <h3 class="text-lg font-semibold">Nouveau Ticket</h3>
+                <button id="closeModal" class="text-white hover:text-gray-200">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <form>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Sujet*</label>
+                            <input type="text" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Décrivez brièvement le problème">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Priorité*</label>
+                            <select class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Sélectionnez une priorité</option>
+                                <option>Urgent</option>
+                                <option>Élevé</option>
+                                <option>Moyen</option>
+                                <option>Faible</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Description*</label>
+                            <textarea rows="4" class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent" placeholder="Décrivez le problème en détail..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catégorie*</label>
+                            <select class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Sélectionnez une catégorie</option>
+                                <option>Matériel</option>
+                                <option>Logiciel</option>
+                                <option>Réseau</option>
+                                <option>Email</option>
+                                <option>Compte Utilisateur</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Département</label>
+                            <select class="w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent">
+                                <option>Sélectionnez un département</option>
+                                <option>IT</option>
+                                <option>Finance</option>
+                                <option>RH</option>
+                                <option>Logistique</option>
+                                <option>Production</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Pièces jointes</label>
+                            <div class="flex items-center justify-center w-full">
+                                <label class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <i class="fas fa-cloud-upload-alt text-gray-400 text-2xl mb-2"></i>
+                                        <p class="text-sm text-gray-500">Glissez-déposez des fichiers ou <span class="text-blue-600">parcourir</span></p>
+                                    </div>
+                                    <input type="file" class="hidden" multiple>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button type="button" class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50">Annuler</button>
+                        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">Créer Ticket</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        
+        menuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('sidebar-open');
+        });
+        
+        // Modal handling
+        const newTicketBtn = document.querySelector('button:contains("Nouveau Ticket")');
+        const ticketModal = document.getElementById('ticketModal');
+        const closeModal = document.getElementById('closeModal');
+        
+        // This would be connected to the actual "New Ticket" button
+        // For demo purposes, we'll just show the modal when clicking any button with "Nouveau Ticket"
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('button') && e.target.closest('button').textContent.includes('Nouveau Ticket')) {
+                ticketModal.classList.remove('hidden');
+            }
+        });
+        
+        closeModal.addEventListener('click', () => {
+            ticketModal.classList.add('hidden');
+        });
+        
+        // Close modal when clicking outside
+        ticketModal.addEventListener('click', (e) => {
+            if (e.target === ticketModal) {
+                ticketModal.classList.add('hidden');
+            }
+        });
+        
+        // AI suggestion for ticket subject
+        const subjectInput = document.querySelector('input[placeholder="Décrivez brièvement le problème"]');
+        subjectInput.addEventListener('input', (e) => {
+            // In a real app, this would call an NLP API for suggestions
+            console.log('Fetching suggestions for:', e.target.value);
+        });
+    </script>
+</body>
+</html>
